@@ -1,0 +1,21 @@
+{
+  "name": "jobportal-mongodb--master",
+  "version": "1.0.0",
+  "description": "Run npm init",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "nodemon": "npm run start"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^2.3.3",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.7-alpha.3",
+    "fast-csv": "^4.3.0",
+    "fs": "0.0.1-security",
+    "mongodb": "^3.5.8"
+  }
+}
