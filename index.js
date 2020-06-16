@@ -72,7 +72,7 @@ function readCSV(file, res) {
           });
         });
         mongoClient.connect(
-          "mongodb://localhost:27017",
+          "mongodb://aditya:aditya@ds131137.mlab.com:31137/aditya",
           { useNewUrlParser: true },
           (err, client) => {
             if (err) {
@@ -113,7 +113,7 @@ function readJSON(file, res) {
 
 function insertFile(file, res) {
   mongoClient.connect(
-    "mongodb://localhost:27017",
+    "mongodb://aditya:aditya@ds131137.mlab.com:31137/aditya",
     { useNewUrlParser: true },
     (err, client) => {
       if (err) {
@@ -136,7 +136,7 @@ function insertFile(file, res) {
 
 function getFiles(res) {
   mongoClient.connect(
-    "mongodb://localhost:27017",
+    "mongodb://aditya:aditya@ds131137.mlab.com:31137/aditya",
     { useNewUrlParser: true },
     (err, client) => {
       if (err) {
