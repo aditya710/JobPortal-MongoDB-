@@ -17,10 +17,12 @@
     </form>
 
     <form action="/download" method="GET">
+      <input type="file" name="downloadFile" /> <br />
+      <br />
       <input type="submit" value="Download File" />
     </form>
 
-    <h2>Read CSV File - MongoDB</h2>
+    <h2>Read CSV and JSON Files - MongoDB</h2>
     <form action="/read" method="POST" enctype="multipart/form-data">
       <input type="file" name="readFile" /> <br />
       <br />
