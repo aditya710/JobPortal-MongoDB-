@@ -14,7 +14,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/download", (req, res) => {
-  getFiles(res);
+  getFiles(req, res);
 });
 
 app.use(fileUpload());
@@ -57,12 +57,12 @@ function readCSV(file, res) {
           // In the following line, insert employerId(type: ObjectId)
           final_res.push({
             jobTitle: item.Title,
-            tasks: [item.JobRequirment],
-            expectations: [item.JobDescription],
+            tasks: [item.jobpost],
+            expectations: [item.RequiredQual],
             skills: [item.JobRequirment],
             languages: ["en", "de", "po"],
             jobDescription: item.JobDescription,
-            aboutUs: item.JobDescription,
+            aboutUs: item.AboutC,
             //decide how you want to do the following line.
             jobType: "Part-time",
             location: item.Location,
@@ -72,7 +72,7 @@ function readCSV(file, res) {
           });
         });
         mongoClient.connect(
-          "mongodb://aditya:aditya@ds131137.mlab.com:31137/aditya",
+          "mongodb://localhost:27017",
           { useNewUrlParser: true },
           (err, client) => {
             if (err) {
@@ -106,14 +106,36 @@ function readCSV(file, res) {
 function readJSON(file, res) {
   fs.readFile("savedfile.json", (err, data) => {
     if (err) throw err;
-    let jobs = JSON.parse(data);
-    console.log(jobs);
+    else{
+      let jobs = JSON.parse(data);
+      console.log(jobs);    
+    }   
   });
+  mongoClient.connect(
+    "mongodb://localhost:27017",
+    { useNewUrlParser: true },
+    (err, client) => {
+      if (err) {
+        return err;
+      } else {
+        let db = client.db("jobportal");
+        let collection = db.collection("jobs");
+        try {
+          collection.insertMany(jobs);
+          console.log("Jobs Inserted");
+        } catch (err) {
+          console.log("Error while inserting:", err);
+        }
+        client.close();
+        res.redirect("/");
+      }
+    }
+  );
 }
 
 function insertFile(file, res) {
   mongoClient.connect(
-    "mongodb://aditya:aditya@ds131137.mlab.com:31137/aditya",
+    "mongodb://localhost:27017",
     { useNewUrlParser: true },
     (err, client) => {
       if (err) {
@@ -134,9 +156,10 @@ function insertFile(file, res) {
   );
 }
 
-function getFiles(res) {
+function getFiles(req, res) {
+  let filename = req.body.downloadFile;
   mongoClient.connect(
-    "mongodb://aditya:aditya@ds131137.mlab.com:31137/aditya",
+    "mongodb://localhost:27017",
     { useNewUrlParser: true },
     (err, client) => {
       if (err) {
@@ -144,12 +167,12 @@ function getFiles(res) {
       } else {
         let db = client.db("jobportal");
         let collection = db.collection("userdocs");
-        collection.find({}).toArray((err, doc) => {
+        collection.find({filename}).toArray((err, doc) => {
           if (err) {
             console.log("err in finding doc:", err);
           } else {
             let buffer = doc[0].file.buffer;
-            fs.writeFileSync("files", buffer);
+            fs.writeFileSync(filename, buffer);
           }
         });
         client.close();
