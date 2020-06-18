@@ -9,14 +9,18 @@
 
   <body>
     <h2>Upload and Download Files - MongoDB</h2>
+
+    <h4>Upload Files to MongoDB</h4>
+    <br />
     <form action="/upload" method="POST" enctype="multipart/form-data">
       <input type="text" name="name" placeholder="File Name.." /><br />
+      <br />
       <input type="file" name="uploadedFile" /> <br />
       <br />
       <input type="submit" value="Upload File" />
     </form>
 
-    <br />
+    <h4>Download Files from MongoDB</h4>
     <br />
     <form action="/download" method="GET">
       <input type="text" name="downloadfile" placeholder="File to Download.." /> <br />
@@ -24,11 +28,11 @@
       <input type="submit" value="Download File" />
     </form>
 
-    <h2>Read CSV and JSON Files - MongoDB</h2>
+    <h2>Read CSV and JSON Files - Import to MongoDB</h2>
     <form action="/read" method="POST" enctype="multipart/form-data">
       <input type="file" name="readFile" /> <br />
       <br />
-      <input type="submit" value="Read CSV" />
+      <input type="submit" value="Read and Import" />
     </form>
   </body>
 </html>

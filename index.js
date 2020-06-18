@@ -3,6 +3,7 @@ const fileUpload = require("express-fileupload");
 const mongodb = require("mongodb");
 const fs = require("fs");
 const csv = require("csv-parser");
+const gfs = require("gridfs-stream")
 
 const app = express();
 const router = express.Router();
@@ -14,7 +15,8 @@ router.get("/", (req, res) => {
 });
 
 router.get("/download", (req, res) => {
-  getFiles(req, res);
+  let name = req.query.downloadfile;
+  getFiles(name, res);
 });
 
 app.use(fileUpload());
@@ -108,29 +110,32 @@ function readJSON(file, res) {
     if (err) throw err;
     else{
       let jobs = JSON.parse(data);
-      console.log(jobs);    
+      console.log("read complete");    
+      mongoClient.connect(
+        "mongodb://localhost:27017",
+        { useNewUrlParser: true },
+        (err, client) => {
+          if (err) {
+            console.log(err);
+            return err;
+          } else {
+            console.log("connected successfully");
+            let db = client.db("jobportal");
+            let collection = db.collection("jobs");
+            try {
+              collection.insertMany(jobs);
+              console.log("Jobs Inserted");
+            } catch (err) {
+              console.log("Error while inserting:", err);
+            }
+            client.close();
+            res.redirect("/");
+          } 
+        }
+      );
     }   
   });
-  mongoClient.connect(
-    "mongodb://localhost:27017",
-    { useNewUrlParser: true },
-    (err, client) => {
-      if (err) {
-        return err;
-      } else {
-        let db = client.db("jobportal");
-        let collection = db.collection("jobs");
-        try {
-          collection.insertMany(jobs);
-          console.log("Jobs Inserted");
-        } catch (err) {
-          console.log("Error while inserting:", err);
-        }
-        client.close();
-        res.redirect("/");
-      }
-    }
-  );
+  
 }
 
 function insertFile(file, res) {
@@ -156,8 +161,8 @@ function insertFile(file, res) {
   );
 }
 
-function getFiles(req, res) {
-  let filename = req.body.downloadFile;
+function getFiles(name, res) {
+  console.log(name);
   mongoClient.connect(
     "mongodb://localhost:27017",
     { useNewUrlParser: true },
@@ -167,12 +172,13 @@ function getFiles(req, res) {
       } else {
         let db = client.db("jobportal");
         let collection = db.collection("userdocs");
-        collection.find({filename}).toArray((err, doc) => {
+        collection.find({name}).toArray((err, doc) => {
           if (err) {
             console.log("err in finding doc:", err);
           } else {
+            console.log(doc);
             let buffer = doc[0].file.buffer;
-            fs.writeFileSync(filename, buffer);
+            fs.writeFileSync("downloadedfile", buffer);
           }
         });
         client.close();
@@ -184,4 +190,4 @@ function getFiles(req, res) {
 
 app.use("/", router);
 
-app.listen(3000, () => console.log("Started on 3000 port"));
+app.listen(3001, () => console.log("Started on 3000 port"));
